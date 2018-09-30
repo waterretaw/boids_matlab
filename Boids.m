@@ -18,9 +18,16 @@ classdef Boids < handle
         end
         
         function init(obj)
+            % 随机生成集群个体
             for x = 100:100:obj.settings.width
                 for y = 100:100:obj.settings.height
                     obj.boids = [obj.boids Boid(x+rand*3,y+rand*3,obj)];
+                end
+            end
+            % 随机生成障碍物
+            for x = 200:200:obj.settings.width
+                for y = 200:200:obj.settings.height
+                    obj.avoids = [obj.avoids Avoid(x+rand*3,y+rand*3)];
                 end
             end
         end

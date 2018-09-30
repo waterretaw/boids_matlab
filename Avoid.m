@@ -19,7 +19,7 @@ classdef Avoid < handle
         function draw(obj)
             % ÕÏ°­ÎïµÄÏÔÊ¾
             hold on;
-            scatter(obj.pos(1),obj.pos(2),15,[0,255/255,200/255]);
+            scatter(obj.pos(1),obj.pos(2),30,[1,0,0]);
         end
     end
 end

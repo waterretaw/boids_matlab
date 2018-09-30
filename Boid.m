@@ -46,7 +46,7 @@ classdef Boid < handle
             
             obj.move = obj.move + allign*50;
             obj.move = obj.move + avoidDir*10;
-            obj.move = obj.move + avoidObjects;
+            obj.move = obj.move + avoidObjects*50;
             obj.move = obj.move + noise;
             obj.move = obj.move + cohese*10;
             obj.limitSpeed();
@@ -140,10 +140,10 @@ classdef Boid < handle
             avoidRadius = obj.boidsObj.settings.avoidRadius;
             steer = [0 0];
             count = 0;
-            for friend = obj.friends
-                d = dist(obj.pos,friend.pos');
+            for avoid = obj.boidsObj.avoids
+                d = dist(obj.pos,avoid.pos');
                 if d>0 && d<avoidRadius
-                    diff = obj.pos - friend.pos;
+                    diff = obj.pos - avoid.pos;
                     diff = diff / norm(diff);
                     diff = diff / d;
                     steer = steer + diff;
