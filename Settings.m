@@ -14,11 +14,13 @@ classdef Settings < handle
         crowdRadius;
         avoidRadius;
         coheseRadius;
+        
+        destination;
     end
     
     methods
         function obj = Settings()
-            obj.maxSpeed = 2.1 * obj.globalScale;
+            obj.maxSpeed = 5.1 * obj.globalScale;
             obj.friendRadius = 60 * obj.globalScale;
             obj.crowdRadius = (obj.friendRadius /1.3);
             obj.avoidRadius = 90 * obj.globalScale;

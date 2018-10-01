@@ -40,15 +40,17 @@ classdef Boid < handle
             avoidObjects = obj.getAvoidAvoids();
             noise = [-1+rand*2 -1+rand*2];
             cohese = obj.getCohesion();
+            dest = obj.getDestination();
             
 %             disp('move');
 %             disp([allign;avoidDir;avoidObjects;noise;cohese]);
             
             obj.move = obj.move + allign*50;
-            obj.move = obj.move + avoidDir*10;
+            obj.move = obj.move + avoidDir*20;
             obj.move = obj.move + avoidObjects*50;
             obj.move = obj.move + noise;
             obj.move = obj.move + cohese*10;
+            obj.move = obj.move + dest;
             obj.limitSpeed();
             obj.shade = obj.shade + obj.getAverageColor() * 0.03;
             obj.shade = obj.shade + rand*2 -1;
@@ -173,6 +175,15 @@ classdef Boid < handle
             end
         end
         
+        function desired = getDestination(obj)
+            % 向目的地移动
+            destination = obj.boidsObj.settings.destination;
+            d = dist(destination,obj.pos');
+            desired = destination - obj.pos;
+            desired = desired / norm(desired);
+%             desired = desired * d/100;
+        end
+        
         function increament(obj)
             % 控制刷新频率
             obj.thinkTimer = mod(obj.thinkTimer+1,5);
@@ -217,13 +228,13 @@ classdef Boid < handle
             % 填充颜色
             patch(x,y,[obj.shade/255,90/255,200/255]);
             % 与friends之间画线
-            for friend = obj.friends
-                xx = [obj.pos(1) 0];
-                yy = [obj.pos(2) 0];
-                xx(2) = friend.pos(1);
-                yy(2) = friend.pos(2);
-                line(xx,yy);
-            end
+%             for friend = obj.friends
+%                 xx = [obj.pos(1) 0];
+%                 yy = [obj.pos(2) 0];
+%                 xx(2) = friend.pos(1);
+%                 yy(2) = friend.pos(2);
+%                 line(xx,yy);
+%             end
         end
     end
     
