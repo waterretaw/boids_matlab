@@ -17,7 +17,52 @@ classdef Boids < handle
             obj.settings = Settings();
         end
         
+        function run(obj)
+            width = obj.settings.width;
+            height = obj.settings.height;
+            position = [150 80 width height];
+            % figure 设置visible属性为off 为了让生成movie时不显示figure
+            obj.figh = figure('Position',position,'NumberTitle', 'off', 'Name', 'boids','visible','off');
+            obj.init();
+
+            n = 200; % movie的总帧数
+            % 生成movie
+            M = moviein(n);
+            for f = 1:n
+                clf;
+                axis([0 width 0 height]); % 设置坐标轴范围
+                axis manual; % 冻结坐标轴
+                obj.loop();
+                %                 pause(1/1000);
+                M(f) = getframe;
+            end
+            
+            % 播放movie
+            set(obj.figh,'visible','on'); % 播放movie 让figure可见
+            movie(M); % 显示movie
+            close(obj.figh); % 关闭figure
+            
+            % 保存movie为avi
+            writeObj = VideoWriter('scene.avi');
+            open(writeObj);
+            writeVideo(writeObj,M);
+            close(writeObj);
+            disp('save ok');
+        end
+        
+        function loop(obj)
+            for boid = obj.boids
+                boid.go();
+                boid.draw();
+            end
+            for avoid = obj.avoids
+                avoid.go();
+                avoid.draw();
+            end
+        end
+        
         function init(obj)
+            % 初始化函数 设置目的地点坐标 随机生成集群个体和障碍物
             destination = [500 300];
             obj.settings.destination = destination;
             % 随机生成集群个体
@@ -26,12 +71,12 @@ classdef Boids < handle
                     obj.boids = [obj.boids Boid(x+rand*3,y+rand*3,obj)];
                 end
             end
-%             % 随机生成障碍物
-%             for x = 200:200:obj.settings.width
-%                 for y = 200:200:obj.settings.height
-%                     obj.avoids = [obj.avoids Avoid(x+rand*3,y+rand*3)];
-%                 end
-%             end
+            %             % 随机生成障碍物
+            %             for x = 200:200:obj.settings.width
+            %                 for y = 200:200:obj.settings.height
+            %                     obj.avoids = [obj.avoids Avoid(x+rand*3,y+rand*3)];
+            %                 end
+            %             end
         end
         
         
@@ -87,31 +132,6 @@ classdef Boids < handle
             end
         end
         
-        function run(obj)
-            width = obj.settings.width;
-            height = obj.settings.height;
-            position = [150 80 width height];
-            obj.figh = figure('Position',position,'NumberTitle', 'off', 'Name', 'boids');
-            obj.init();
-            while isvalid(obj.figh)
-                clf;
-                axis([0 width 0 height]); % 设置坐标轴范围
-                axis manual; % 冻结坐标轴
-                obj.loop();
-                pause(1/1000);
-            end
-        end
-        
-        function loop(obj)
-            for boid = obj.boids
-                boid.go();
-                boid.draw();
-            end
-            for avoid = obj.avoids
-                avoid.go();
-                avoid.draw();
-            end
-        end
     end
 end
 

@@ -14,38 +14,47 @@ classdef Boid < handle
         function obj = Boid(x,y,boidsObj)
             %BOID 构造此类的实例
             %   此处显示详细说明
-            obj.pos = [x y];
-            obj.move = [0 0];
-            obj.shade = 255*rand;
-            obj.thinkTimer = 10*rand;
-            obj.friends = [];
-            obj.boidsObj = boidsObj;
+            %   nargin 输入参数个数
+            if nargin == 0
+                obj.pos = [0 0];
+                obj.move = [0 0];
+                obj.shade = 255*rand;
+                obj.thinkTimer = 10*rand;
+                obj.friends = [];
+            elseif nargin == 3
+                obj.pos = [x y];
+                obj.move = [0 0];
+                obj.shade = 255*rand;
+                obj.thinkTimer = 10*rand;
+                obj.friends = [];
+                obj.boidsObj = boidsObj;
+            end
         end
         
         function go(obj)
             % 个体移动
             obj.increament();
             obj.wrap();
-%             if(round(obj.thinkTimer) == 0)
-                obj.getFriends();
-%             end
+            %             if(round(obj.thinkTimer) == 0)
+            obj.getFriends();
+            %             end
             obj.flock();
             obj.pos = obj.pos + obj.move;
         end
         
         function flock(obj)
             % 集群算法
-            allign = obj.getAverageDir();
-            avoidDir = obj.getAvoidDir();
-            avoidObjects = obj.getAvoidAvoids();
-            noise = [-1+rand*2 -1+rand*2];
-            cohese = obj.getCohesion();
-            dest = obj.getDestination();
+            allign = obj.getAverageDir();           % 速度匹配
+            avoidDir = obj.getAvoidDir();           % 个体之间碰撞避免
+            avoidObjects = obj.getAvoidAvoids();    % 个体与障碍物之间碰撞避免
+            noise = [-1+rand*2 -1+rand*2];          %  随机噪声
+            cohese = obj.getCohesion();             % 个体之间凝聚
+            dest = obj.getDestination();            % 向目的地移动
             
-%             disp('move');
-%             disp([allign;avoidDir;avoidObjects;noise;cohese]);
+            %             disp('move');
+            %             disp([allign;avoidDir;avoidObjects;noise;cohese]);
             
-            obj.move = obj.move + allign*50;
+            obj.move = obj.move + allign*50;        % 后边乘常数是为了调整的该因素的影响大小
             obj.move = obj.move + avoidDir*20;
             obj.move = obj.move + avoidObjects*50;
             obj.move = obj.move + noise;
@@ -70,15 +79,18 @@ classdef Boid < handle
         
         function getFriends(obj)
             % 得到邻居
-            nearby = [];
+            maxlen = length(obj.boidsObj.boids);
+            nearby(1,maxlen) = Boid(); % 对象数组申明 预分配数组
+            i = 1;
             for boid = obj.boidsObj.boids
                 if boid == obj
                     continue;
                 elseif obj.isFriend(boid)
-                    nearby = [nearby boid];
+                    nearby(i) = boid;
+                    i = i + 1;
                 end
             end
-            obj.friends = nearby;
+            obj.friends = nearby(1:i-1);
         end
         
         function color = getAverageColor(obj)
@@ -181,7 +193,7 @@ classdef Boid < handle
             d = dist(destination,obj.pos');
             desired = destination - obj.pos;
             desired = desired / norm(desired);
-%             desired = desired * d/100;
+            %             desired = desired * d/100;
         end
         
         function increament(obj)
@@ -228,13 +240,15 @@ classdef Boid < handle
             % 填充颜色
             patch(x,y,[obj.shade/255,90/255,200/255]);
             % 与friends之间画线
-%             for friend = obj.friends
-%                 xx = [obj.pos(1) 0];
-%                 yy = [obj.pos(2) 0];
-%                 xx(2) = friend.pos(1);
-%                 yy(2) = friend.pos(2);
-%                 line(xx,yy);
-%             end
+            xx = [obj.pos(1) 0];
+            yy = [obj.pos(2) 0];
+            for friend = obj.friends
+                if obj.pos(1) < friend.pos(1) % 解决个体之间存在两条线的问题
+                    xx(2) = friend.pos(1);
+                    yy(2) = friend.pos(2);
+                    line(xx,yy);
+                end
+            end
         end
     end
     

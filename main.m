@@ -8,4 +8,5 @@ b.run();
 % 向量旋转 makehgtform
 
 % need to do 
+% 动画效果的优化 movie
 % 转化为矩阵的形式描述
